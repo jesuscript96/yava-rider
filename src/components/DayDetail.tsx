@@ -8,7 +8,7 @@ import moment from 'moment'
 
 const DayDetail: React.FC = () => {
   const { user } = useAuth()
-  const { selectedDate, orders, setOrders, updateOrderStatus } = useStore()
+  const { selectedDate, orders, setOrders } = useStore()
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 

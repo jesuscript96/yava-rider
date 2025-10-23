@@ -8,22 +8,21 @@ if (!GOOGLE_MAPS_API_KEY) {
 
 // Configurar las opciones globalmente (solo una vez)
 setOptions({
-  apiKey: GOOGLE_MAPS_API_KEY || '',
-  version: 'weekly',
+  key: GOOGLE_MAPS_API_KEY || '',
   language: 'es',
 })
 
 // Función para cargar las librerías de Google Maps
 export async function loadGoogleMaps() {
   try {
-    const { Map } = await importLibrary('maps')
+    const { Map, InfoWindow } = await importLibrary('maps')
     const { DirectionsService, DirectionsRenderer } = await importLibrary('routes')
     const { Marker } = await importLibrary('marker')
     const { Geocoder } = await importLibrary('geocoding')
     const { PlacesService } = await importLibrary('places')
     const { LatLngBounds } = await importLibrary('core')
     
-    return { Map, DirectionsService, DirectionsRenderer, Marker, Geocoder, PlacesService, LatLngBounds }
+    return { Map, InfoWindow, DirectionsService, DirectionsRenderer, Marker, Geocoder, PlacesService, LatLngBounds }
   } catch (error) {
     console.error('Error loading Google Maps libraries:', error)
     throw error
@@ -173,11 +172,11 @@ export class RouteOptimizer {
       // Calcular estadísticas de la ruta
       const route = result.routes[0]
       
-      const totalDistance = route.legs.reduce((sum, leg) => sum + leg.distance.value, 0)
-      const totalDuration = route.legs.reduce((sum, leg) => sum + leg.duration.value, 0)
+      const totalDistance = route.legs.reduce((sum, leg) => sum + (leg.distance?.value || 0), 0)
+      const totalDuration = route.legs.reduce((sum, leg) => sum + (leg.duration?.value || 0), 0)
 
       // Obtener polyline
-      const polyline = route.overview_polyline.encoded_path
+      const polyline = (route.overview_polyline as any).encoded_polyline
 
       return {
         waypoints: optimizedWaypoints,
